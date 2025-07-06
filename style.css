@@ -1,0 +1,133 @@
+@charset "utf-8";
+/* Mi Documento CSS: */
+/* Mis estilos globales para mi Pagina Web: */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Para el encabezado: */
+.header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+/* Para la barra de navegación: */
+.nav-table {
+    width: 1068px;
+    height: 47px;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.nav-cell {
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+.nav-cell a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-cell a:hover {
+    color: #f0f0f0;
+}
+
+/* Para las secciones principales: */
+.section-title {
+    text-align: center;
+    color: #022179;
+    margin: 20px 0;
+}
+
+.about-section {
+    background-color: #39a9f1;
+    padding: 20px;
+    margin: 20px auto;
+    width: 1015px;
+}
+
+.founder-section {
+    background-color: #0ec6cb;
+    padding: 20px;
+    margin: 20px auto;
+    width: 1015px;
+}
+
+.experience-section {
+    background-color: #022179;
+    color: white;
+    padding: 20px;
+    margin: 20px auto;
+    width: 1015px;
+}
+
+/* Para los textos: */
+h1 {
+    font-size: 2.2em;
+    color: #022179;
+}
+
+h2 {
+    font-size: 1.8em;
+    color: inherit;
+}
+
+h3 {
+    font-size: 1.4em;
+    color: #0ec6cb;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+/* Para las listas: */
+.skills-list {
+    padding-left: 20px;
+}
+
+.skills-list li {
+    margin-bottom: 8px;
+}
+
+/* Para el pie de página: */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    margin-top: 30px;
+}
+
+/* Para mis clases personalizadas: */
+.highlight {
+    font-weight: bold;
+    color: #022179;
+}
+
+.emphasis {
+    font-style: italic;
+    color: #39a9f1;
+}
+
+/* Para mi ID único: */
+#founder-image {
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
