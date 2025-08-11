@@ -38,7 +38,7 @@ function init3DBackground() {
         element.rotation.x = Math.random() * Math.PI;
         element.rotation.y = Math.random() * Math.PI;
         
-        // Su velocidad de rotación:
+        // S velocidad de rotación:
         element.userData = {
             speed: {
                 x: Math.random() * 0.01 - 0.005,
