@@ -54,3 +54,13 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+if (process.env.NODE_ENV === 'production') {
+    // Aquí coloco los archivos estáticos:
+    app.use(express.static(path.join(__dirname, 'public')));
+    
+    // Manejar SPA:
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    });
+}
