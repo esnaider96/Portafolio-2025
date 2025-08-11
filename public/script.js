@@ -137,21 +137,38 @@ function initContactForm() {
             const originalBtnText = submitBtn.innerHTML;
             
             try {
-                // Simulo envío, en producción, aquí iría la conexión real con MongoDB:
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
                 submitBtn.disabled = true;
                 
-                // Simular retardo de red:
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Obtener los datos del formulario:
+                const formData = {
+                    name: this.name.value,
+                    email: this.email.value,
+                    phone: this.phone.value,
+                    subject: this.subject.value,
+                    message: this.message.value
+                };
                 
-                // Mostrar notificación de éxito:
-                showNotification('Mensaje enviado con éxito! Nos pondremos en contacto pronto.', 'success');
+                // Enviar los datos al servidor:
+                const response = await fetch('http://localhost:5000/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
                 
-                // Resetear formulario:
-                this.reset();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showNotification(data.message || '¡Mensaje enviado con éxito! Nos pondremos en contacto contigo muy pronto, saludos.', 'success');
+                    this.reset();
+                } else {
+                    throw new Error(data.error || 'Error al enviar tu mensaje, intentalo de nuevo, por favor.');
+                }
             } catch (error) {
-                showNotification('Error al enviar el mensaje. Por favor intente nuevamente.', 'error');
                 console.error('Error:', error);
+                showNotification(error.message || 'Error al enviar tu mensaje. Por favor intentalo de nuevo, por favor.', 'error');
             } finally {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
@@ -217,42 +234,3 @@ document.addEventListener('DOMContentLoaded', () => {
         showNotification('Bienvenido a MONTEBYTES - Soluciones Informáticas', 'success');
     }, 1000);
 });
-
-// Conexión con MongoDB (simulada - en producción usarías Mongoose)
-/*
-// Ejemplo de cómo sería la conexión real con MongoDB usando Mongoose
-const mongoose = require('mongoose');
-const Contact = require('./models/Contact');
-
-async function connectDB() {
-    try {
-        await mongoose.connect('mongodb://localhost:27017/montebytes', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('Conectado a MongoDB');
-    } catch (err) {
-        console.error('Error de conexión a MongoDB:', err);
-    }
-}
-
-// En el manejador del formulario:
-async function handleFormSubmit(formData) {
-    try {
-        const newContact = new Contact({
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            subject: formData.subject,
-            message: formData.message,
-            date: new Date()
-        });
-        
-        await newContact.save();
-        return true;
-    } catch (err) {
-        console.error('Error al guardar contacto:', err);
-        return false;
-    }
-}
-*/
