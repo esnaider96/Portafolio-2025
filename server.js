@@ -8,66 +8,85 @@ const Contact = require('./models/Contact');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Conexión a MongoDB Atlas:
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log('Conectado a MongoDB Atlas - Cluster0'))
-.catch(err => console.error('Error de conexión con MongoDB:', err));
+// Configuración de CORS mucho más estricta:
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://esnaider96.github.io/Portafolio-2025' 
+    : 'http://localhost:3000',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
-// Middleware:
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Ruta para manejar el formulario de contacto:
+// Conexión a MongoDB:
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Conectado a MongoDB'))
+.catch(err => console.error('Error de conexión a MongoDB:', err));
+
+// Ruta de prueba:
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'API funcionando correctamente' });
+});
+
+// Ruta del formulario de contacto (POST)
 app.post('/api/contact', async (req, res) => {
-    try {
-        const { name, email, phone, subject, message } = req.body;
-        
-        // La validación básica:
-        if (!name || !email || !message) {
-            return res.status(400).json({ 
-                error: 'Por favor completa todos los campos requeridos' 
-            });
-        }
-
-        // Crear y guardar el contacto en la base de datos:
-        const newContact = new Contact({
-            name,
-            email,
-            phone: phone || '',
-            subject,
-            message
-        });
-
-        await newContact.save();
-
-        res.json({ 
-            success: true, 
-            message: "Mensaje enviado con éxito, gracias por tu comunicación." 
-        });
-    } catch (error) {
-        console.error('Error al procesar el contacto:', error);
-        res.status(500).json({ 
-            error: 'Error al procesar tu mensaje. Por favor inténtalo de nuevo.' 
-        });
+  try {
+    // Validación básica
+    if (!req.body.name || !req.body.email || !req.body.message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Nombre, email y mensaje son campos requeridos'
+      });
     }
+
+    // Crear nuevo contacto:
+    const newContact = new Contact({
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone || '',
+      subject: req.body.subject || 'Consulta General',
+      message: req.body.message
+    });
+
+    // Guardar en la base de datos:
+    await newContact.save();
+
+    // Respuesta exitosa:
+    res.status(201).json({
+      success: true,
+      message: 'Mensaje enviado con éxito. Nos pondremos en contacto pronto.'
+    });
+
+  } catch (error) {
+    console.error('Error al procesar el contacto:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor al procesar tu mensaje.'
+    });
+  }
 });
 
 // Configuración para producción:
 if (process.env.NODE_ENV === 'production') {
-    // Servir archivos estáticos
-    app.use(express.static(path.join(__dirname, 'Portafolio-2025')));
-    
-    // Manejar todas las demás rutas con el index.html
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'Portafolio-2025', 'index.html'));
-    });
+  app.use(express.static(path.join(__dirname, 'Portafolio-2025')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Portafolio-2025', 'index.html'));
+  });
 }
 
-// Ruta de prueba
-app.get('/api/test', (req, res) => {
-    res.json({ status: 'API funcionando correctamente' });
+// Manejo de errores 404
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
+// Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

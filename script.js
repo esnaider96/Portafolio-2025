@@ -126,66 +126,56 @@ function initScrollAnimations() {
 }
 
 function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    
-    if (contactForm) {
-        contactForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            const form = this; // Guardamos referencia al formulario
-            
-            try {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-                submitBtn.disabled = true;
-                
-                // Obtener los datos del formulario
-                const formData = {
-                    name: form.name.value,
-                    email: form.email.value,
-                    phone: form.phone.value,
-                    subject: form.subject.value,
-                    message: form.message.value
-                };
-                
-                // Configuración de la URL
-                const API_URL = window.location.hostname === 'localhost' 
-                    ? 'http://localhost:5000/api/contact' 
-                    : '/api/contact';
-
-                // Enviar los datos al servidor
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                // Manejo de la respuesta
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => null);
-                    throw new Error(errorData?.error || `Error HTTP: ${response.status}`);
-                }
-
-                const data = await response.json();
-                showNotification(data.message || '¡Mensaje enviado con éxito! nos pondremos en contacto contigo pronto.', 'success');
-                form.reset();
-                
-            } catch (error) {
-                console.error('Error en el formulario:', error);
-                showNotification(
-                    error.message || 'Error al enviar el mensaje. Por favor inténtalo de nuevo.', 
-                    'error'
-                );
-            } finally {
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            }
+  const contactForm = document.getElementById('contactForm');
+  
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      
+      try {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        submitBtn.disabled = true;
+        
+        const formData = {
+          name: this.name.value,
+          email: this.email.value,
+          phone: this.phone.value,
+          subject: this.subject.value,
+          message: this.message.value
+        };
+        
+        // URL base del entorno:
+        const baseURL = window.location.origin;
+        const API_URL = `${baseURL}/api/contact`;
+        
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
         });
-    }
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al enviar el mensaje');
+        }
+        
+        showNotification(data.message, 'success');
+        this.reset();
+        
+      } catch (error) {
+        showNotification(error.message, 'error');
+      } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    });
+  }
 }
 
 // Mostrar las notificaciones:
